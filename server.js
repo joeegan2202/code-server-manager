@@ -1,6 +1,34 @@
-const proxy = require('express-http-proxy')
-const app = require('express')()
+const Docker = require('dockerode')
 
-app.use('/', proxy('localhost:8080'))
+let docker = new Docker()
 
-app.listen('8000')
+let container1, container2
+
+docker.createContainer({Image: 'e531cd37a868', Env: ["NAME=Joe Egan", "EMAIL=joe@eganshub.net"], ExposedPorts: {"8443/tcp": {}}, HostConfig: {AutoRemove: true}}, (err, container) => {
+    if (err) console.log(err)
+    container1 = container
+    container.start().then(() => {
+    container.inspect((err, data) => {
+        if (err) console.log(err)
+        console.log(data.NetworkSettings.Networks.bridge.IPAddress)
+    })
+    }
+    )
+})
+
+docker.createContainer({Image: 'e531cd37a868', Env: ["NAME=Joe Egan", "EMAIL=joe@eganshub.net"], ExposedPorts: {"8443/tcp": {}}, HostConfig: {AutoRemove: true}}, (err, container) => {
+    if (err) console.log(err)
+    container2 = container
+    container.start().then(() => {
+    container.inspect((err, data) => {
+        if (err) console.log(err)
+        console.log(data.NetworkSettings.Networks.bridge.IPAddress)
+    })
+    }
+    )
+})
+
+setTimeout(() => {
+    container1.stop()
+    container2.stop()
+}, 10000)

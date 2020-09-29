@@ -1,0 +1,26 @@
+{
+  "name": "code-server-manager",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "dockerode": "^3.2.1",
+    "express": "^4.17.1",
+    "express-http-proxy": "^1.6.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CHSWebDev/code-server-manager.git"
+  },
+  "author": "Joe Egan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/CHSWebDev/code-server-manager/issues"
+  },
+  "homepage": "https://github.com/CHSWebDev/code-server-manager#readme"
+}
