@@ -3,10 +3,19 @@ const express = require('express')
 const fs = require('fs')
 let app = express()
 
-let data = JSON.parse(fs.readFileSync('datafile.txt')) | {
-    users: {},
-    containers: []
-}
+let data
+
+fs.readFile('datafile.txt', (err, data) => {
+    if (err) {
+        console.log(err)
+        process.exit()
+    }
+
+    data = JSON.parse(data) | {
+        users: {},
+        containers: []
+    }
+})
 
 app.get('/api/login/', (req, res) => {
     if (data.users[req.query.email]) {
