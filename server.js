@@ -33,7 +33,7 @@ let docker = new Docker()
 
 function startContainer(email) {
     let config = {
-    Image: 'e531cd37a868',
+    Image: process.env.IMAGE,
     Env: [
         `NAME=${data.users[email].name}`,
         `EMAIL=${email}`,
@@ -51,7 +51,6 @@ function startContainer(email) {
 
     docker.createContainer(config, (err, container) => {
         if (err) console.log(err)
-        container1 = container
         container.start().then(() => {
         container.inspect((err, data) => {
             if (err) console.log(err)
