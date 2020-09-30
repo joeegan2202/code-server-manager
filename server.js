@@ -20,7 +20,7 @@ app.get('/api/new/', (req, res) => {
             name: req.query.name,
             password: req.query.password
         }
-        createContainer(req.query.email)
+        startContainer(req.query.email)
         res.send(true)
     } else {
         res.send(false)
