@@ -1,9 +1,11 @@
 const Docker = require('dockerode')
 const express = require('express')
+const fs = require('fs')
 let app = express()
 
-let data = {
-    users: {}
+let data = JSON.parse(fs.readFileSync('datafile.txt')) | {
+    users: {},
+    containers: []
 }
 
 app.get('/api/login/', (req, res) => {
@@ -21,7 +23,7 @@ app.get('/api/new/', (req, res) => {
             password: req.query.password
         }
         startContainer(req.query.email)
-        res.send(true)
+        res.send({url: `https://${req.query.email.split("@")[0]}.code.eganshub.net`})
     } else {
         res.send(false)
     }
@@ -51,10 +53,16 @@ function startContainer(email) {
 
     docker.createContainer(config, (err, container) => {
         if (err) console.log(err)
+
+        data.containers.push(container)
         container.start().then(() => {
         container.inspect((err, data) => {
             if (err) console.log(err)
-            console.log(data.NetworkSettings.Networks.bridge.IPAddress)
+            fs.appendFileSynch('/etc/nginx/sites-enabled/code-server-containers.conf', 
+            `upstream ${email.split('@')[0]} {
+                server ${data.NetworkSettings.Networks.bridge.IPAddress}:8443;
+            }
+            `)
         })
         }
         )
@@ -62,3 +70,15 @@ function startContainer(email) {
 }
 
 app.listen(8080)
+
+process.on('SIGTERM', () => {
+    for(container in data.containers) {
+        container.stop()
+    }
+
+    fs.writeFileSync('datafile.txt', JSON.stringify(data))
+
+    fs.writeFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', null)
+
+    process.exit()
+})
