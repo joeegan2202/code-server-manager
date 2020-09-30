@@ -29,7 +29,7 @@ class App extends React.Component {
         </form> :
         <form onSubmit={e => {
           e.preventDefault()
-          fetch(`https://code.eganshub.net/api/new/?email=${document.querySelector("#email").value}&name=${document.querySelector('#name')}&password=${document.querySelector('#password')}`)
+          fetch(`https://code.eganshub.net/api/new/?email=${document.querySelector("#email").value}&name=${document.querySelector('#name').value}&password=${document.querySelector('#password').value}`)
           alert("new")
         }}>
           <input id="email" type="email" placeholder="Email Address"></input>
