@@ -1,6 +1,6 @@
 const Docker = require('dockerode')
-const e = require('express')
-let app = require('express')()
+const express = require('express')
+let app = express()
 
 let data = {
     users: {}
@@ -26,6 +26,8 @@ app.get('/api/new/', (req, res) => {
         res.send(false)
     }
 })
+
+app.use(express.static('client/build'))
 
 let docker = new Docker()
 
@@ -59,3 +61,5 @@ function startContainer(email) {
         )
     })
 }
+
+app.listen(80)
