@@ -6,9 +6,11 @@ let app = express()
 let data
 
 fs.readFile('datafile.txt', (err, data) => {
-    if (err && err.errno != -2) {
-        console.log(err)
-        process.exit()
+    if (err) {
+        if (err.errno != -2) {
+            console.log(err)
+            process.exit()
+        }
     }
 
     data = JSON.parse(data) | {
