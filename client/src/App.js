@@ -21,7 +21,10 @@ class App extends React.Component {
         }}>New User</button>
         {this.state.returning ? <form onSubmit={e => {
           e.preventDefault()
-          fetch("https://code.eganshub.net/api/login/?email=" + document.querySelector("#email").value)
+          fetch("https://code.eganshub.net/api/login/?email=" + document.querySelector("#email").value).then(data => data.json()).then(res => {
+            console.log(res)
+            window.location.replace(res.url)
+          })
           alert("returning")
         }}>
           <input id="email" type="email" placeholder="Email Address"></input>
@@ -29,7 +32,10 @@ class App extends React.Component {
         </form> :
         <form onSubmit={e => {
           e.preventDefault()
-          fetch(`https://code.eganshub.net/api/new/?email=${document.querySelector("#email").value}&name=${document.querySelector('#name').value}&password=${document.querySelector('#password').value}`)
+          fetch(`https://code.eganshub.net/api/new/?email=${document.querySelector("#email").value}&name=${document.querySelector('#name').value}&password=${document.querySelector('#password').value}`).then(data => data.json()).then(res => {
+            console.log(res)
+            window.location.replace(res.url)
+          })
           alert("new")
         }}>
           <input id="email" type="email" placeholder="Email Address"></input>
