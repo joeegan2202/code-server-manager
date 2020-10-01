@@ -10,13 +10,16 @@ fs.readFile('datafile.txt', (err, data) => {
         if (err.errno != -2) {
             console.log(err)
             process.exit()
+        } else {
+            data = {
+                users: {},
+                containers: []
+            }
+            return
         }
     }
 
-    data = JSON.parse(data) | {
-        users: {},
-        containers: []
-    }
+    data = JSON.parse(data)
 })
 
 app.get('/api/login/', (req, res) => {
