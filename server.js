@@ -76,7 +76,7 @@ function startContainer(email) {
                 return
             }
 
-            fs.appendFileSynch('/etc/nginx/sites-enabled/code-server-containers.conf', 
+            fs.appendFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', 
             `upstream ${email.split('@')[0]} {
                 server ${data.NetworkSettings.Networks.bridge.IPAddress}:8443;
             }
