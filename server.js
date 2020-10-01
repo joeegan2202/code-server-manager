@@ -1,6 +1,7 @@
 const Docker = require('dockerode')
 const express = require('express')
 const fs = require('fs')
+const { exec } = require('child_process')
 let app = express()
 
 let data = {
@@ -81,6 +82,8 @@ function startContainer(email) {
                 server ${data.NetworkSettings.Networks.bridge.IPAddress}:8443;
             }
             `)
+
+            exec('systemctl restart nginx')
         })
         }
         )
