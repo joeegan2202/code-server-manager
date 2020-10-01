@@ -93,13 +93,13 @@ function startContainer(email) {
 app.listen(8080)
 
 process.on('SIGTERM', () => {
-    for(container in data.containers) {
+    for(container of data.containers) {
         container.stop()
     }
 
     fs.writeFileSync('datafile.txt', JSON.stringify(data))
 
-    fs.writeFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', null)
+    fs.writeFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', '')
 
     process.exit()
 })
