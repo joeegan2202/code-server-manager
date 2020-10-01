@@ -3,20 +3,17 @@ const express = require('express')
 const fs = require('fs')
 let app = express()
 
-let data
+let data = {
+    users: {},
+    containers: []
+}
 
 fs.readFile('datafile.txt', (err, data) => {
     if (err) {
-        if (err.errno != -2) {
-            console.log(err)
-            process.exit()
-        } else {
-            data = {
-                users: {},
-                containers: []
-            }
-            return
-        }
+        if (err.errno == -2) return
+        
+        console.log(err)
+        process.exit()
     }
 
     data = JSON.parse(data)
