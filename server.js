@@ -63,12 +63,19 @@ function startContainer(email) {
     //}
 
     docker.createContainer(config, (err, container) => {
-        if (err) console.log(err)
+        if (err) {
+            console.log(err)
+            return
+        }
 
         data.containers.push(container)
         container.start().then(() => {
         container.inspect((err, data) => {
-            if (err) console.log(err)
+            if (err) {
+                console.log(err)
+                return
+            }
+
             fs.appendFileSynch('/etc/nginx/sites-enabled/code-server-containers.conf', 
             `upstream ${email.split('@')[0]} {
                 server ${data.NetworkSettings.Networks.bridge.IPAddress}:8443;
