@@ -4,25 +4,54 @@ const fs = require('fs')
 const { exec } = require('child_process')
 let app = express()
 
-let data = {
-    users: {},
-    containers: []
-}
+let data = {}
+
+fs.writeFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', '')
 
 fs.readFile('datafile.txt', (err, data) => {
     if (err) {
-        if (err.errno == -2) return
+        if (err.errno == -2) {
+            docker.listContainers().then((err, containers) => {
+                containers.forEach(container => {
+                    docker.getContainer(container.Id).stop()
+                })
+            })
+        }
         
         console.log(err)
         process.exit()
     }
 
-    data = JSON.parse(data)
+    let temp = JSON.parse(data)
+
+    docker.listContainers().then((err, containers) => {
+        containers.foreach(container => {
+            let found = false
+            for (key in temp) {
+                if (temp[key].container === container.Id) {
+                    found = true
+                    data[key] = temp[key]
+
+                    container.inspect((err, data) => {
+                        fs.appendFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', 
+                        `upstream ${temp[key].email.split('@')[0]} {
+                            server ${data.NetworkSettings.Networks.bridge.IPAddress}:8443;
+                        }
+                        `)
+                    })
+                }
+            }
+
+            if(!found) {
+                container.stop()
+            }
+        })
+    })
 })
 
 app.get('/api/login/', (req, res) => {
-    if (data.users[req.query.email]) {
-        res.send({url: req.query.email.split("@")[0]})
+    if (data.users[req.query.email] && data.users[req.query.email].container) {
+        res.send({url: `https://${req.query.email.split("@")[0]}.code.eganshub.net`})
     } else {
         res.send(false)
     }
@@ -69,7 +98,6 @@ function startContainer(email) {
             return
         }
 
-        data.containers.push(container)
         container.start().then(() => {
         container.inspect((err, data) => {
             if (err) {
@@ -93,13 +121,7 @@ function startContainer(email) {
 app.listen(8080)
 
 process.on('SIGTERM', () => {
-    for(container of data.containers) {
-        container.stop()
-    }
-
     fs.writeFileSync('datafile.txt', JSON.stringify(data))
-
-    fs.writeFileSync('/etc/nginx/sites-enabled/code-server-containers.conf', '')
 
     process.exit()
 })
